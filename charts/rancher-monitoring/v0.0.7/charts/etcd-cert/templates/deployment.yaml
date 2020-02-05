@@ -1,0 +1,36 @@
+apiVersion: {{ template "deployment_api_version" . }}
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
+      containers:
+      - name: etcd-cert-monitor
+        image: rancherlxl/etcdcertnotify:v4
+        volumeMounts:
+        - name: etcdcerts
+          mountPath: /etcdcerts
+      volumes:
+      - name: etcdcerts
+        hostPath:
+          path: /etc/kubernetes/ssl
+      nodeSelector:
+        node-role.kubernetes.io/etcd: 'true'

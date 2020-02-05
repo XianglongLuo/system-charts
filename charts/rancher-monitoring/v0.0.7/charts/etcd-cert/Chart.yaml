@@ -1,0 +1,8 @@
+apiVersion: v1
+description: Creates Etcd certificate Monitor instance for Kubernetes which maintaining by Rancher 2.
+engine: gotpl
+maintainers:
+- name: XianglongLuo
+  email: xianglong.luo@rancher.com
+name: etcd-cert
+version: 0.0.1
