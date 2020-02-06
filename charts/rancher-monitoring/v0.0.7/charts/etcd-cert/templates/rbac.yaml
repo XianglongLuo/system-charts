@@ -1,53 +1,42 @@
-{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: {{ template "app.name" . }}
-    chart: {{ template "app.version" . }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-  name: {{ template "app.fullname" . }}
-
----
-apiVersion: {{ template "rbac_api_version" . }}
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: {{ template "app.fullname" . }}
   labels:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  - secrets
-  verbs:
-  - "list"
-  - "watch"
-  - "get"
-  - "create"
-  - "delete"
-
+- apiGroups: [""]
+  resources: ["secrets", "namespaces"]
+  verbs: ["get", "list", "create", "watch", "delete"]
 ---
-apiVersion: {{ template "rbac_api_version" . }}
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  name: {{ include "app.fullname" . }}
   labels:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}
+  name: {{ template "app.fullname" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ template "app.fullname" . }}
     namespace: {{ .Release.Namespace }}
-{{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
