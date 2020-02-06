@@ -4,6 +4,11 @@ dependencies:
     condition: alertmanager.enabled
     repository: "file://./charts/alertmanager/"
 
+  - name: etcd-cert
+    version: 0.0.1
+    condition: etcd-cert.enabled
+    repository: "file://./charts/etcd-cert/"
+
   - name: exporter-coredns
     version: 0.0.1
     condition: exporter-coredns.enabled
