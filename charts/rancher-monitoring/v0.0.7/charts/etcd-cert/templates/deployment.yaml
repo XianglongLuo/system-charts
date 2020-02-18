@@ -24,7 +24,7 @@ spec:
       serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
       containers:
       - name: etcd-cert-monitor
-        image: rancherlxl/etcdcertnotify:v4
+        image: rancherlxl/etcd-cert-monitoring:v1.0
         volumeMounts:
         - name: etcdcerts
           mountPath: /etcdcerts
